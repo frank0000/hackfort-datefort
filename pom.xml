@@ -4,7 +4,7 @@
 
 	<groupId>hackfort.merryband</groupId>
 	<artifactId>hackfort-app</artifactId>
-	<version>1.0.0</version>
+	<version>0.0.1</version>
 	<name>hackfort-app</name>
 	
 	<parent>

@@ -13,7 +13,6 @@ mvn clean package
 
 Then run the Java application:
 ```
-cd target
-java -jar ng-spring-boot-1.0.0.jar
+java -jar target/hackfort-app-0.0.1.jar
 ```
 
