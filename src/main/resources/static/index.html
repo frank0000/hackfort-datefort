@@ -155,6 +155,7 @@
 			}
 
 			function refreshData(){
+				initialize();
 				getActivityJson(getRestaurantData);
 			}
 			
@@ -170,40 +171,86 @@
 					place = choices[Math.floor(Math.random() * choices.length)]
 					$('.restaurant').html(place.name);
 					$('.star-rating').attr("src", place.rating_img_url);
+					geocode(activityObject.address, activityMap);
+
 				});
 			}
-			
-			function geocode(address){
+			function dropPin(latitude, longitude, whichMap) {
+					var activityLatlng = new google.maps.LatLng(latitude ,longitude);
+
+					var iconBase = './img/';
+					var marker = new google.maps.Marker({
+					  position: activityLatlng,
+					  animation: google.maps.Animation.DROP,
+					  map: whichMap,
+					  icon: whichMap == activityMap ? iconBase + 'activityPin.png' : iconBase + 'dinnerPin.png'
+					  });
+
+					if (whichMap == activityMap) {
+						activityMap.setCenter(activityLatlng);
+						geocode(place.address1, dinnerMap);
+					}
+					else {
+						dinnerMap.setCenter(activityLatlng)
+					}
+			}
+			function setMaps(data, address, whichMap) {
+				if (data.results[0].locations.length < 1){
+						$.ajax ({
+
+							dataType: "json",
+							url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + ",+Boise,+ID"
+						}).done(function(googleData){
+							console.log(googleData);
+							var latitude = googleData.results[0].geometry.location.lat;
+							var longitude = googleData.results[0].geometry.location.lng;
+							dropPin(latitude, longitude, whichMap);
+						});
+					}
+
+					else{
+
+						var latitude = data.results[0].locations[0].latLng.lat;
+						var longitude = data.results[0].locations[0].latLng.lng;
+						dropPin(latitude, longitude, whichMap);
+					}
+
+			}
+			function geocode(address, whichMap){
 				$.ajax({
 					dataType: "jsonp",
 					url: "http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluu82l0y21%2C2n%3Do5-94z0gu&location="
-							+ address + "&callback=renderGeocode"
+							+ address + ",+Boise,+ID&inFormat=json"
 				}).done(function(data){
-					var latitude = data.results[0].locations[0].latLng.lat;
-					var longitude = data.results[0].locations[0].latLng.lng;
+					setMaps(data, address, whichMap);
 				});
 			}
 			
+			var activityMap;
+			var dinnerMap;
+
+			// Refresh Data
 			$(document).ready(function() {
-				refreshData();
+				getActivityJson(getRestaurantData);
 			});
 
+			/* Map The Activity */
 			function initialize() {
-				var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+				var myLatlng = new google.maps.LatLng(43.6261601,-116.189266);
 				var mapOptions = {
-					zoom: 4,
+					zoom: 12,
 					center: myLatlng
 				}
-				var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+				activityMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+				dinnerMap = new google.maps.Map(document.getElementById('map-canvas-dinner'), mapOptions);
 
-				var marker = new google.maps.Marker({
-					position: myLatlng,
-					map: map,
-					title: 'Hello World!'
-				});
 			}
 
+
+			//show map
+			
 			google.maps.event.addDomListener(window, 'load', initialize);
+
 		</script>
 		
 		</head>
@@ -229,10 +276,10 @@
 							<p>
 								<span>Eat at </span>
 								<span class="restaurant"></span> 
-								<br/>
+								
 								<img class="star-rating" src="">
 							</p>
-							<div id="map-canvasDinner"></div>
+							<div id="map-canvas-dinner"></div>
 						</div>
 					</div>
 

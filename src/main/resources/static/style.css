@@ -59,5 +59,20 @@ body{
 	color: white;
 }
 #map-canvas{
-
+	width: 90%;
+    height: 200px;
+    display: block;
+    margin: 10px auto;
+    border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+#map-canvas-dinner{
+	width: 90%;
+    height: 200px;
+    display: block;
+    margin: 10px auto;
+    border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 }
