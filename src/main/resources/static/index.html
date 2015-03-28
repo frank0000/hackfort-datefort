@@ -134,21 +134,21 @@
 
 			function refreshData(){
 				getActivityJson(getRestaurantData);
-//				getRestaurantData();
 			}
+			
 			function getRestaurantData(activityObject){
 				activityJsonCallback(activityObject);
 				
 				$.ajax({
-					dataType: "json",
-					url: "http://maps.googleapis.com/maps/api/geocode/json?address=" + activityObject.address
-				}).done(function(data){
-					var result = data;
-					console.log(result);
-					var lat = result.lat//"43.590363"
-					var lon = result.long//"-116.2331255"
-					testingRest(lat, lon);
-
+					dataType: "jsonp",
+					url: "http://api.yelp.com/business_review_search?term=restaurant&location="
+							+ activityObject.Address + ",+Boise,+ID&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
+				}).done(function (data){
+					var choices = data.businesses;
+					place = choices[Math.floor(Math.random() * choices.length)]
+					$('.restaurant').html(place.name);
+					$('.star-rating').attr("src", place.rating_img_url);
+					
 				});
 			}
 			
@@ -158,25 +158,7 @@
 			$(document).ready(function() {
 				refreshData();
 			});
-			
-			function testingRest(lat, lon) {
 
-				$.ajax({
-					dataType: "jsonp",
-					url: "http://api.yelp.com/business_review_search?term=restaurant&lat="
-							+ lat + "&long=" + lon + "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
-				}).done(function (data){
-					console.log(data);
-					var choices = data.businesses;
-					place = choices[Math.floor(Math.random() * choices.length)]
-					$('.restaurant').html(place.name);
-					$('.star-rating').attr("src", place.rating_img_url);
-					console.log(place);
-					
-					
-				});
-				}
-			
 			function initialize() {
 				var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
 				var mapOptions = {
