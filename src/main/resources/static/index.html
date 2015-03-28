@@ -137,7 +137,8 @@
                         
             }   
                 $(document).ready(function() {
-                    var activityObject = getActivityJson(activityJsonCallback);
+                    getActivityJson(activityJsonCallback);
+					getRestaurantData();
                 });
                 function activityJsonCallback(activityObject) {
                     $('.activity').html(activityObject.activity);
@@ -167,27 +168,30 @@ function getRestaurantData(){
             "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ",
 
             function( data ) {
-                var jsonObj = $.parseJSON(data)
+                var jsonObj = $.parseJSON(data);
+				console.log(jsonObj);
                 var choices = jsonObj['name'];
                 place = choices[Math.floor(Math.random() * choices.length)]
                 console.log(typeof place);
                 
-
-            });
-            var restaurantObj = {
-             "restaurantName" : name,
-             "restaurantAddress" : address1
+				/*var restaurantObj = {
+				"restaurantName" : JSON.businesses[place].name,
+				"restaurantAddress" : JSON.businesses[place].address1*/
             }
-            console.log(restaurantObj);
-            return restaurantObj
-        }   
-            $(document).ready(function() {
-                var restaurantObj = getRestaurantData();
-                console.log(activityObject);
-                //console.log(restaurantObj.placeName);
-                $('.restaurantName').html(restaurantObj.restaurantName);
-                $('.restaurantAddress').html(restaurantObj.restaurantAddress);
-            });
+			
+            );
+            
+            //console.log(restaurantObj);
+            //return restaurantObj
+        } 
+		
+		/*$(document).ready(function() {
+			var restaurantObj = getRestaurantData();
+			console.log(activityObject);
+			//console.log(restaurantObj.placeName);
+			//$('.restaurantName').html(restaurantObj.restaurantName);
+			//$('.restaurantAddress').html(restaurantObj.restaurantAddress);
+		});*/
         </script>
 
         <script>
