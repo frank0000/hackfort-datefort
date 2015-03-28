@@ -172,7 +172,8 @@
 				console.log(data);
                 var choices = data.businesses;
                 place = choices[Math.floor(Math.random() * choices.length)]
-                console.log(typeof place);
+				$('.restaurant').html(place.name);
+                console.log(place);
 			});
         }
 			//$('.restaurantName').html(restaurantObj.restaurantName);
@@ -221,14 +222,14 @@
                 <div class="col-md-6 animated bounceIn">
                     <img src="img/dinner.svg" class="dinner inputLogo center-block">
                     <div class="infoHolder center-block">
-                        <p>Dinner at Applebees</p>
+                        <p>Eat at <span class="restaurant"></<span></p>
                         <div id="map-canvasDinner"></div>
                     </div>
                 </div>
 
             </div>
             <div class="row spacer">
-                <button class="btn btn-default date center-block" type="submit">GET THE DATE</button>
+                <button class="btn btn-default date center-block" type="submit">RAN-DATE-OMIZE</button>
             </div>
             <div class="row spacer">
                 <p class="note">*Bring your own supplies and date.</p>
