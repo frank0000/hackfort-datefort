@@ -26,6 +26,10 @@
 		<link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
 		<script src="http://js.arcgis.com/3.13/"></script>
 		<script>
+		function refreshData(){
+			getActivityJson(activityJsonCallback);
+			getRestaurantData();
+		}
 		function getActivityJson(activityCallback) {
 			var amenities = [
 				"Archery",
@@ -137,8 +141,7 @@
                         
 		}   
 		$(document).ready(function() {
-			getActivityJson(activityJsonCallback);
-			getRestaurantData();
+			refreshData();
 		});
 		function activityJsonCallback(activityObject) {
 			$('.activity').html(activityObject.activity);
@@ -229,7 +232,7 @@
 
             </div>
             <div class="row spacer">
-                <button class="btn btn-default date center-block" type="submit">RAN-DATE-OMIZE</button>
+                <button class="btn btn-default date center-block" type="submit" onClick="refreshData()">RAN-DATE-OMIZE</button>
             </div>
             <div class="row spacer">
                 <p class="note">*Bring your own supplies and date.</p>
