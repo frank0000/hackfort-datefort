@@ -157,7 +157,7 @@ function getRestaurantData(){
             var lat = "43.590363"
             var lon = "-116.2331255"
 
-            $.get("http://api.yelp.com/business_review_search?term=restaurant&lat="
+            /*$.get("http://api.yelp.com/business_review_search?term=restaurant&lat="
             +
             lat
             +
@@ -165,21 +165,38 @@ function getRestaurantData(){
             +
             lon
             +
-            "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ",
+            "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ",*/
+			
+			$.ajax({
+				dataType: "jsonp",
+				url: "http://api.yelp.com/business_review_search?term=restaurant&lat="
+						+
+						lat
+						+
+						"&long="
+						+
+						lon
+						+
+						"&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
+			}).done(function (data){
+				var jsonObj = $.parseJSON(data);
+				console.log(jsonObj);
+                var choices = jsonObj['name'];
+                place = choices[Math.floor(Math.random() * choices.length)]
+                console.log(typeof place);
+			});
 
-            function( data ) {
+            /*function( data ) {
                 var jsonObj = $.parseJSON(data);
 				console.log(jsonObj);
                 var choices = jsonObj['name'];
                 place = choices[Math.floor(Math.random() * choices.length)]
                 console.log(typeof place);
                 
-				/*var restaurantObj = {
+				var restaurantObj = {
 				"restaurantName" : JSON.businesses[place].name,
-				"restaurantAddress" : JSON.businesses[place].address1*/
-            }
-			
-            );
+				"restaurantAddress" : JSON.businesses[place].address1
+            }*/
             
             //console.log(restaurantObj);
             //return restaurantObj
