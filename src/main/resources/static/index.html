@@ -23,129 +23,129 @@
 
 
         <!-- BEGIN ARCGIS -->
-            <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
-            <script src="http://js.arcgis.com/3.13/"></script>
-            <script>
-            function getActivityJson(activityCallback) {
-                            var amenities = [
-                                "Archery",
-                                "Baseball",
-                                "Basketball",
-                                "Birding",
-                                "BMX Jump Park",
-                                "Bocce",
-                                "Cricket",
-                                "Disc Golf",
-                                "Off-leash Dog area",
-                                "Equestrian Arena",
-                                "Fishing",
-                                "Golf Clubhouse",
-                                "Outdoor Gym",
-                                "Pickleball",
-                                "Skateboard",
-                                "Soccer",
-                                "Softball",
-                                "Tennis",
-                                "Volleyball",
-                                "Ice Skating",
-                                "Swimming Pool",
-                                "Trailhead",
-                                "Zoo"
-                            ];
-                            var activity = amenities[Math.floor(Math.random() * amenities.length)];
-                            var qsActivity = activity.replace(' ', '+');
-                            var notParkAmenities = [
-                                "Archery",
-                                "Golf Clubhouse",
-                                "Ice Skating",
-                                "Nature Center",
-                                "Off-leash Dog area",
-                                "Swimming Pool",
-                                "Trailhead",
-                                "Zoo"
-                            ]
-                        
-                        var isPark = true;
-                        var tableNumber = 3;
-                        var query = "Amenity%3D%27" + qsActivity + "%27";
-                        var outFields = "ParkName,ParkID";
-                        var placeName = "";
-                        var address = "";
-                        
-                        for (i=0; i < notParkAmenities.length && isPark; i++) {
-                            if (activity == notParkAmenities[i]) {
-                                isPark = false;
-                            }
-                        }
-                        if (!isPark) {
-                            //set vars
-                            tableNumber = 0;
-                            query = "FacilType%3D%27" + activity + "%27+and+Address+is+not+null";
-                            outFields = "FacilityName%2CAddress";
-                        }
+		<link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+		<script src="http://js.arcgis.com/3.13/"></script>
+		<script>
+		function getActivityJson(activityCallback) {
+			var amenities = [
+				"Archery",
+				"Baseball",
+				"Basketball",
+				"Birding",
+				"BMX Jump Park",
+				"Bocce",
+				"Cricket",
+				"Disc Golf",
+				"Off-leash Dog area",
+				"Equestrian Arena",
+				"Fishing",
+				"Golf Clubhouse",
+				"Outdoor Gym",
+				"Pickleball",
+				"Skateboard",
+				"Soccer",
+				"Softball",
+				"Tennis",
+				"Volleyball",
+				"Ice Skating",
+				"Swimming Pool",
+				"Trailhead",
+				"Zoo"
+			];
+			var activity = amenities[Math.floor(Math.random() * amenities.length)];
+			var qsActivity = activity.replace(' ', '+');
+			var notParkAmenities = [
+				"Archery",
+				"Golf Clubhouse",
+				"Ice Skating",
+				"Nature Center",
+				"Off-leash Dog area",
+				"Swimming Pool",
+				"Trailhead",
+				"Zoo"
+			]
+					
+			var isPark = true;
+			var tableNumber = 3;
+			var query = "Amenity%3D%27" + qsActivity + "%27";
+			var outFields = "ParkName,ParkID";
+			var placeName = "";
+			var address = "";
+					
+			for (i=0; i < notParkAmenities.length && isPark; i++) {
+				if (activity == notParkAmenities[i]) {
+					isPark = false;
+				}
+			}
+			if (!isPark) {
+				//set vars
+				tableNumber = 0;
+				query = "FacilType%3D%27" + activity + "%27+and+Address+is+not+null";
+				outFields = "FacilityName%2CAddress";
+			}
 
-                        $.get("http://gismaps.cityofboise.org/arcgis/rest/services/OpenData/BoiseParksOpenData/MapServer/"
-                        +
-                        tableNumber
-                        +
-                        "/query?where="
-                        +
-                        query
-                        +
-                        "&outFields="
-                        +
-                        outFields
-                        +
-                        "&f=pjson",
-                        function( data ) {
-                            var jsonObj = $.parseJSON(data)
-                            var choices = jsonObj['features'];
-                            place = choices[Math.floor(Math.random() * choices.length)]
-                            
-                            if (isPark) {
-                                placeName = place.attributes.ParkName;
-                                var parkID = place.attributes.ParkID;
-                                var addressJson = "http://gismaps.cityofboise.org/arcgis/rest/services/OpenData/BoiseParksOpenData/MapServer/1/query?where=ParkID%3D%27" + parkID + "%27&outFields=Address&f=pjson";
-                                $.get(addressJson, function(data2){
-                                    addressFeature = $.parseJSON(data2)
-                                    if (addressFeature.features.length != 1) {
-                                        return getActivityJson(activityCallback);
-                                    }
-                                    else {
-                                        address = addressFeature.features[0].attributes.Address;
-                                        var activityObj = {
-                                        "activity" : activity,
-                                        "placeName" : placeName,
-                                        "address" : address
-                                        }
-                                        activityCallback(activityObj);
-                                    }
-                                })
-                            }
-                            else {
-                                placeName = place.attributes.FacilityName;
-                                address= place.attributes.Address;
-                                var activityObj = {
-                                        "activity" : activity,
-                                        "placeName" : placeName,
-                                        "address" : address
-                                        }
-                                        activityCallback(activityObj);
-                            }
-                            
-                        });
+			$.get("http://gismaps.cityofboise.org/arcgis/rest/services/OpenData/BoiseParksOpenData/MapServer/"
+			+
+			tableNumber
+			+
+			"/query?where="
+			+
+			query
+			+
+			"&outFields="
+			+
+			outFields
+			+
+			"&f=pjson",
+			function( data ) {
+				var jsonObj = $.parseJSON(data)
+				var choices = jsonObj['features'];
+				place = choices[Math.floor(Math.random() * choices.length)]
+				
+				if (isPark) {
+					placeName = place.attributes.ParkName;
+					var parkID = place.attributes.ParkID;
+					var addressJson = "http://gismaps.cityofboise.org/arcgis/rest/services/OpenData/BoiseParksOpenData/MapServer/1/query?where=ParkID%3D%27" + parkID + "%27&outFields=Address&f=pjson";
+					$.get(addressJson, function(data2){
+						addressFeature = $.parseJSON(data2)
+						if (addressFeature.features.length != 1) {
+							return getActivityJson(activityCallback);
+						}
+						else {
+							address = addressFeature.features[0].attributes.Address;
+							var activityObj = {
+							"activity" : activity,
+							"placeName" : placeName,
+							"address" : address
+							}
+							activityCallback(activityObj);
+						}
+					})
+				}
+				else {
+					placeName = place.attributes.FacilityName;
+					address= place.attributes.Address;
+					var activityObj = {
+							"activity" : activity,
+							"placeName" : placeName,
+							"address" : address
+							}
+							activityCallback(activityObj);
+				}
+				
+			});
                         
-            }   
-                $(document).ready(function() {
-                    getActivityJson(activityJsonCallback);
-					getRestaurantData();
-                });
-                function activityJsonCallback(activityObject) {
-                    $('.activity').html(activityObject.activity);
-                    $('.placeName').html(activityObject.placeName);
-                    $('.address').html(activityObject.address);
-                }
-                        </script>
+		}   
+		$(document).ready(function() {
+			getActivityJson(activityJsonCallback);
+			getRestaurantData();
+		});
+		function activityJsonCallback(activityObject) {
+			$('.activity').html(activityObject.activity);
+			$('.placeName').html(activityObject.placeName);
+			$('.address').html(activityObject.address);
+		}
+		</script>
 
                     <!-- END ARCGIS -->
 
@@ -153,19 +153,9 @@
 
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
         <script type="text/javascript">
-function getRestaurantData(){
+		function getRestaurantData(){
             var lat = "43.590363"
             var lon = "-116.2331255"
-
-            /*$.get("http://api.yelp.com/business_review_search?term=restaurant&lat="
-            +
-            lat
-            +
-            "&long="
-            +
-            lon
-            +
-            "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ",*/
 			
 			$.ajax({
 				dataType: "jsonp",
@@ -179,36 +169,15 @@ function getRestaurantData(){
 						+
 						"&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
 			}).done(function (data){
-				var jsonObj = $.parseJSON(data);
-				console.log(jsonObj);
-                var choices = jsonObj['name'];
+				console.log(data);
+                var choices = data.businesses;
                 place = choices[Math.floor(Math.random() * choices.length)]
                 console.log(typeof place);
 			});
-
-            /*function( data ) {
-                var jsonObj = $.parseJSON(data);
-				console.log(jsonObj);
-                var choices = jsonObj['name'];
-                place = choices[Math.floor(Math.random() * choices.length)]
-                console.log(typeof place);
-                
-				var restaurantObj = {
-				"restaurantName" : JSON.businesses[place].name,
-				"restaurantAddress" : JSON.businesses[place].address1
-            }*/
-            
-            //console.log(restaurantObj);
-            //return restaurantObj
-        } 
-		
-		/*$(document).ready(function() {
-			var restaurantObj = getRestaurantData();
-			console.log(activityObject);
-			//console.log(restaurantObj.placeName);
+        }
 			//$('.restaurantName').html(restaurantObj.restaurantName);
 			//$('.restaurantAddress').html(restaurantObj.restaurantAddress);
-		});*/
+			
         </script>
 
         <script>
