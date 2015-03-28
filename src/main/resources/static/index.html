@@ -37,7 +37,6 @@
 					"Bocce",
 					"Cricket",
 					"Disc Golf",
-					"Off-leash Dog area",
 					"Equestrian Arena",
 					"Fishing",
 					"Golf Clubhouse",
@@ -53,6 +52,29 @@
 					"Trailhead",
 					"Zoo"
 				];
+				
+				var descriptive = {
+					"Baseball" : "Play Baseball",
+					"Basketball" : "Play Basketball",
+					"Birding" : "Go Bird Watching",
+					"BMX Jump Park" : "Ride your BMX",
+					"Bocce" : "Play Bocce",
+					"Cricket" : "Play Cricket",
+					"Disc Golf" : "Play Frisby Golf",
+					"Equestrian Arena" : "Ride Your Horse",
+					"Fishing" : "Go Fishing",
+					"Golf Clubhouse" : "Go Golfing",
+					"Pickleball" : "Play Pickleball",
+					"Skateboard" : "Go Skateboarding",
+					"Soccer" : "Play Soccer",
+					"Softball" : "Play Softball",
+					"Tennis" : "Play Tennis",
+					"Ice Skating" : "Go Ice Skating",
+					"Swimming Pool" : "Go Swimming",
+					"Trailhead" : "Hike",
+					"Zoo" : "Visit",
+				}
+				
 				var activity = amenities[Math.floor(Math.random() * amenities.length)];
 				var qsActivity = activity.replace(' ', '+');
 				var notParkAmenities = [
@@ -104,7 +126,7 @@
 							else {
 								address = addressFeature.features[0].attributes.Address;
 								var activityObj = {
-								"activity" : activity,
+								"activity" : descriptive[activity] ? descriptive[activity] : activity,
 								"placeName" : placeName,
 								"address" : address
 								}
@@ -116,7 +138,7 @@
 						placeName = place.attributes.FacilityName;
 						address= place.attributes.Address;
 						var activityObj = {
-								"activity" : activity,
+								"activity" : descriptive[activity] ? descriptive[activity] : activity,
 								"placeName" : placeName,
 								"address" : address
 								}
@@ -207,6 +229,7 @@
 							<p>
 								<span>Eat at </span>
 								<span class="restaurant"></span> 
+								<br/>
 								<img class="star-rating" src="">
 							</p>
 							<div id="map-canvasDinner"></div>
