@@ -148,12 +148,19 @@
 					place = choices[Math.floor(Math.random() * choices.length)]
 					$('.restaurant').html(place.name);
 					$('.star-rating').attr("src", place.rating_img_url);
-					
 				});
 			}
 			
-
-
+			function geocode(address){
+				$.ajax({
+					dataType: "jsonp",
+					url: "http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluu82l0y21%2C2n%3Do5-94z0gu&location="
+							+ address + "&callback=renderGeocode"
+				}).done(function(data){
+					var latitude = data.results[0].locations[0].latLng.lat;
+					var longitude = data.results[0].locations[0].latLng.lng;
+				});
+			}
 			
 			$(document).ready(function() {
 				refreshData();
