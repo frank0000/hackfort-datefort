@@ -86,18 +86,7 @@
 				}
 
 				$.get("http://gismaps.cityofboise.org/arcgis/rest/services/OpenData/BoiseParksOpenData/MapServer/"
-				+
-				tableNumber
-				+
-				"/query?where="
-				+
-				query
-				+
-				"&outFields="
-				+
-				outFields
-				+
-				"&f=pjson",
+						+ tableNumber + "/query?where=" + query + "&outFields=" + outFields + "&f=pjson",
 				function( data ) {
 					var jsonObj = $.parseJSON(data)
 					var choices = jsonObj['features'];
@@ -142,33 +131,38 @@
 				$('.placeName').html(activityObject.placeName);
 				$('.address').html(activityObject.address);
 			}
-			function getRestaurantData(){
-				var lat = "43.590363"
-				var lon = "-116.2331255"
+
+			function refreshData(){
+				getActivityJson(getRestaurantData);
+//				getRestaurantData();
+			}
+			function getRestaurantData(activityObject){
+				activityJsonCallback(activityObject);
 				
 				$.ajax({
 					dataType: "jsonp",
-					url: "http://api.yelp.com/business_review_search?term=restaurant&lat="
-							+
-							lat
-							+
-							"&long="
-							+
-							lon
-							+
-							"&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
-				}).done(function (data){
-					console.log(data);
-					var choices = data.businesses;
-					place = choices[Math.floor(Math.random() * choices.length)]
-					$('.restaurant').html(place.name);
-					console.log(place);
+					url: "http://maps.googleapis.com/maps/api/geocode/json?address=" + activityObject.address
+				}).done(function(data){
+					var lat = data.lat//"43.590363"
+					var lon = data.long//"-116.2331255"
+					
+					$.ajax({
+						dataType: "jsonp",
+						url: "http://api.yelp.com/business_review_search?term=restaurant&lat="
+								+ lat + "&long=" + lon + "&offset=0&radius=1&limit=20&sort=0&ywsid=_Dyh7bReZ1QVwPnf_Vs0ZQ"
+					}).done(function (data){
+						console.log(data);
+						var choices = data.businesses;
+						place = choices[Math.floor(Math.random() * choices.length)]
+						$('.restaurant').html(place.name);
+						console.log(place);
+						
+						
+					});
 				});
 			}
-			function refreshData(){
-				getActivityJson(activityJsonCallback);
-				getRestaurantData();
-			}		
+
+			
 			$(document).ready(function() {
 				refreshData();
 			});
@@ -225,11 +219,6 @@
 				</div>
 
 				<div id="map-canvas"></div>
-
-				<div>
-					<!--<p class="event-activity">The ID is </p>
-					<p class="event-location">The content is </p> -->
-				</div>
 			</div>
 
 			
