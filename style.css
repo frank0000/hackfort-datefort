@@ -58,6 +58,11 @@ body{
 	text-align: center;
 	color: white;
 }
+.footer
+{
+    font-size: small;
+    margin: 100px 150px 0 150px;
+}
 #map-canvas{
 	width: 90%;
     height: 200px;

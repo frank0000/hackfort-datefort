@@ -30,17 +30,17 @@
 		<script>
 			function getActivityJson(activityCallback) {
 				var amenities = [
-				// "Archery", - add back after data fix
+				//  "Archery", - add back after data fix
 					"Baseball",
 					"Basketball",
-					"Birding",
-				// "BMX Jump Park", - add back after data fix
+				//	"Birding", -- add back after data fix - needs Greenbelt
+				//  "BMX Jump Park", - add back after data fix
 					"Bocce",
 					"Cricket",
 					"Disc Golf",
 					"Fishing",
-					//"Golf%20Clubhouse",
-					// "Golf", - add back after data fix
+				 // "Golf%20Clubhouse",
+				 // "Golf", - add back after data fix
                     "Horseshoes",
                     "Outdoor Gym",
 					"Pickleball",
@@ -50,7 +50,7 @@
 					"Softball",
 					"Tennis",
 					"Volleyball",
-					//"Trailhead"
+				 // "Trailhead"
 				];
 				
 				var descriptive = {
@@ -80,58 +80,24 @@
 				
 				var activity = amenities[Math.floor(Math.random() * amenities.length)];
 				var qsActivity = activity.replace(' ', '+');
-//			    var notParkAmenities = [
-//					"Archery",
-//					"Golf Clubhouse",
-//					"Ice Skating",
-//					"Nature	Center",
-//					"Dog Off-leash area",
-//					"Swimming Pool",
-//					"Trailhead",
-//					"Zoo"
-//				]
-//						
-//				var isPark = true;
-//				var tableNumber = 1;
+		    
 				var query = "%27AmenityType%27%3D%27" + qsActivity+"%27";
 				var outFields = "ParkName,ParkID";
 				var placeName = "";
                 var place = "";
-                //Boise Parks Amenities dataset
+                //Boise Parks Amenities open dataset
                 var url = "http://opendata.cityofboise.org/datasets/7533d78ac95c45f88dba9b7d85e1c75c_0.geojson?where=" + query;
-               // OLD End Point var url = "http://opendata.cityofboise.org/datasets/ce4319eec7d84fb0a262f87ddd53e874_0.geojson?where=" + query;
                 var address = "";
-
-//				for (i=0; i < notParkAmenities.length && isPark; i++) {
-//					if (activity == notParkAmenities[i]) {
-//						isPark = false;
-//					}
-//				}
-//				if (!isPark) {
-//             	//set vars
-//					tableNumber = 0;
-//					query = "StreetName+is+not+null";
-//					outFields = "FacilityName,Address";
-//                    //Boise Parks Facilities dataset
-//                    url = "http://opendata.cityofboise.org/datasets/f3f869a1a23648219560176e785d0c06_0.geojson?where=" + query;
-
-//				}
-                			 
-			    console.log('Amenities query: ' + url);
-
-			    $.get(url, function (data) {
-			        // var jsonObj = $.parseJSON(data)
+ 
+			    $.get(url, function (data) {			        
 			        var choices = data.features;
 			        activityPlace = choices[Math.floor(Math.random() * choices.length)]
 
-			        //			        if (isPark) {
 			        placeName = activityPlace.properties.ParkName;
 			        var parkID = activityPlace.properties.ParkID;
 			        address = activityPlace.properties.Address;
 			        activityLatitude = activityPlace.properties.Latitude;
 			        activityLongitude = activityPlace.properties.Longitude;
-
-			        console.log('Activity Coords: ' + activityLatitude);
 
 			        var activityObj = {
 			            "activity": descriptive[activity] ? descriptive[activity] : activity,
@@ -141,52 +107,8 @@
 			        activityCallback(activityObj);
 			    })
 
-//			             var addressJson = "http://services1.arcgis.com/WHM6qC35aMtyAAlN/arcgis/rest/services/Boise_Parks_and_Reserves_Open_Data/FeatureServer/0/query?outFields=Address&where=ParkID=" + parkID + "&f=pjson";
-//			             var addressJson = "http://opendata.cityofboise.org/datasets/f3f869a1a23648219560176e785d0c06_0.geojson?where= + query
-
-//			            console.log('park address: ' + addressJson);
-
-//			            $.get(addressJson, function (data2) {
-
-//			                var addressFeature = $.parseJSON(data2);
-
-//			                console.log('data2: ' + data2);
-			                //console.log(addressFeature.features[0].attributes.Address);
-
-//			                if (!addressFeature.features) {
-//			                    console.log('no features');
-//			                    return getActivityJson(activityCallback);
-//			                } else {
-//			                    address = addressFeature.features[0].attributes.Address;
-//			                }
-
-
-//			                console.log(address);
-
-			                //                                if (addressFeature.features.attributes.Address) {
-			                //			                        address = addressFeature.features.attributes.Address;
-			                //			                    } else if (addressFeature.features[0].attributes.Address) {
-			                //			                        address = addressFeature.features[0].attributes.Address;
-			                //			                    } else {
-			                //			                        getActivityJson(getRestaurantData);
-			                //			                    }		                
-
-//			            })
-//			        }
-			        //					else {                       
-			        //						placeName = place.properties.FacilityName;
-			        //						address= place.properties.Address;
-			        //						var activityObj = {
-			        //								"activity" : descriptive[activity] ? descriptive[activity] : activity,
-			        //								"placeName" : placeName,
-			        //								"address" : address
-			        //								}
-			        //								activityCallback(activityObj);
-			        //					}
-
-//			    });
-							
 			}
+
 			function activityJsonCallback(activityObject) {
 				$('.activity').html(activityObject.activity);
 				$('.placeName').html(activityObject.placeName);
@@ -209,9 +131,10 @@
 					signatureMethod : "HMAC-SHA1"
 				}
 			};
+
 			var terms = 'restaurants';
             
-			var near = activityObject.address + " Boise, ID&limit=20&radius_filter=1000";
+			var near = activityObject.address + " Boise, ID&limit=20&radius_filter=800";
 			var accessor = {
 				consumerSecret : auth.consumerSecret,
 				tokenSecret : auth.accessTokenSecret
@@ -246,66 +169,45 @@
 			        $('.restaurant').html(place.name);
 			        $('.star-rating').attr("src", place.rating_img_url);
 
-			        // Yelp gives us Lat/Long for free ... let's use it instead of geocode
-			        console.log('Lat: ' + place.location.coordinate.latitude);
-			        //			        geocode(activityObject.address, activityMap);
-			        dropPin(activityLatitude, activityLongitude, activityMap);
+			        // Yelp gives us Lat/Long for free      
+			        dropPin(activityLatitude, activityLongitude, activityMap, activityObject.address, activityObject.placeName);
+
 			    }
 			});
-			}
-			function dropPin(latitude, longitude, whichMap) {
-					var activityLatlng = new google.maps.LatLng(latitude ,longitude);
-					var iconBase = './img/';
+}
+
+			function dropPin(latitude, longitude, whichMap, address, name) {
+			    var activityLatlng = new google.maps.LatLng(latitude, longitude);
+
+                    // Add info window with name of park or restaraunt and address
+					var contentString = '<b>' + name + '</b>' + ', ' +
+                                        '<em>' + address + '</em>';
+
+					var infowindow = new google.maps.InfoWindow({
+					    content: contentString
+					});
+
+                    var iconBase = './img/';
 					var marker = new google.maps.Marker({
 					  position: activityLatlng,
 					  animation: google.maps.Animation.DROP,
 					  map: whichMap,
 					  icon: whichMap == activityMap ? iconBase + 'activityPin.png' : iconBase + 'dinnerPin.png'
-			});
+			        });
+			        
+                    marker.addListener('click', function () {
+			            infowindow.open(whichMap, marker);
+			        });
 
 					if (whichMap == activityMap) {
-						activityMap.setCenter(activityLatlng);
-						dropPin(place.location.coordinate.latitude, place.location.coordinate.longitude, dinnerMap);
+					    activityMap.setCenter(activityLatlng);
+					    dropPin(place.location.coordinate.latitude, place.location.coordinate.longitude, dinnerMap, place.location.address[0], place.name);
 					}
 					else {
 						dinnerMap.setCenter(activityLatlng)
 					}
 }
 
-
-
-//			function setMaps(data, address, whichMap) {
-//				if (data.results[0].locations.length < 1){
-//						$.ajax ({
-//							dataType: "json",
-//							url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + ",+Boise,+ID"
-//						}).done(function(googleData){
-//							var latitude = googleData.results[0].geometry.location.lat;
-//							var longitude = googleData.results[0].geometry.location.lng;
-//							dropPin(latitude, longitude, whichMap);
-//						});
-//					}
-
-//					else{
-
-//						var latitude = data.results[0].locations[0].latLng.lat;
-//						var longitude = data.results[0].locations[0].latLng.lng;
-//						dropPin(latitude, longitude, whichMap);
-//					}
-
-//			}
-//			function geocode(address, whichMap){
-//			console.log('geocode: ' + address);
-//            	$.ajax({
-//					dataType: "jsonp",
-//					url: "http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluu82l0y21%2C2n%3Do5-94z0gu&location="
-//							+ address + ",+Boise,+ID&inFormat=json"
-//				}).done(function(data){
-//                console.log('geocode after ' + data);
-//					setMaps(data, address, whichMap);
-//				});
-//			}
-//			
 			var activityMap;
 			var dinnerMap;
 
@@ -318,14 +220,13 @@
 			function initialize() {
 				var myLatlng = new google.maps.LatLng(43.6261601,-116.189266);
 				var mapOptions = {
-					zoom: 12,
+					zoom: 13,
 					center: myLatlng
 				}
 				activityMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 				dinnerMap = new google.maps.Map(document.getElementById('map-canvas-dinner'), mapOptions);
 
 			}
-
 
 			//show map
 			
@@ -370,6 +271,9 @@
 				<div class="row spacer">
 					<p class="note">*Bring your own supplies and date.</p>
 				</div>
+                <div class="row spacer">
+                    <p class="footer">NOTE: Datefort was developed during the Hackfort 2015 hackathon by indepedent coders, using City of Boise and Yelp data. The City of Boise is hosting the app, but is not responsible for its content. Read our <a href="https://opendata.cityofboise.org">full disclaimer</a>, <a href="http://treefortmusicfest.com/hackfort">learn more about Hackfort</a> and <a href="https://github.com/BoiseOpenData/hackfort-datefort">view the code on Github</a>.</p>    
+                </div>
 
 				<div id="map-canvas"></div>
 			</div>
