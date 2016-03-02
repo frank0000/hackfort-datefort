@@ -28,9 +28,7 @@ body{
 	border:3px solid white;
 	color: white;
 }
-.activity{
 
-}
 .inputLogo{
 	width: 100px;
 	margin-bottom: -18px;
@@ -60,8 +58,13 @@ body{
 }
 .footer
 {
+    color:#fff;
     font-size: small;
-    margin: 100px 150px 0 150px;
+    margin:0 100px 0 100px;
+}
+.footerHead{
+    color:#fff;
+     margin: 100px 100px 0 100px;
 }
 #map-canvas{
 	width: 90%;
@@ -80,4 +83,8 @@ body{
     border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
+}
+
+.footer a {
+    color:#32656D
 }
