@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Datefort</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="css/animate.css">
+
+        <!-- Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
+
+
+        <!-- Get Scripts -->
+    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <!-- <script src="app/event.js"></script>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+		<script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+
+        <!-- BEGIN ARCGIS -->
+		<link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+		<script src="http://js.arcgis.com/3.13/"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script>
+			function getActivityJson(activityCallback) {
+				var amenities = [
+				//  "Archery", - add back after data fix
+					"Baseball",
+					"Basketball",
+				//	"Birding", -- add back after data fix - needs Greenbelt
+				//  "BMX Jump Park", - add back after data fix
+					"Bocce",
+					"Cricket",
+					"Disc Golf",
+					"Fishing",
+				 // "Golf%20Clubhouse",
+				 // "Golf", - add back after data fix
+                    "Horseshoes",
+                    "Outdoor Gym",
+					"Pickleball",
+                    "Places to Walk",
+					"Skateboard",
+					"Soccer",
+					"Softball",
+					"Tennis",
+					"Volleyball",
+				 // "Trailhead"
+				];
+				
+				var descriptive = {
+					"Baseball" : "Play Baseball",
+					"Basketball" : "Play Basketball",
+					"Birding" : "Go Bird Watching",
+					"BMX Jump Park" : "Ride your BMX",
+					"Bocce" : "Play Bocce",
+					"Cricket" : "Play Cricket",
+					"Disc Golf" : "Play Frisby Golf",
+					"Equestrian Arena" : "Ride Your Horse",
+					"Fishing" : "Go Fishing",
+                    "Golf" : "Go Golfing",
+					//"Golf Clubhouse" : "Go Golfing",
+					"Pickleball" : "Play Pickleball",
+                    "Places to Walk" : "Take a Walk",
+					"Skateboard" : "Go Skateboarding",
+					"Soccer" : "Play Soccer",
+					"Softball" : "Play Softball",
+					"Tennis" : "Play Tennis",
+                    "Volleyball" : "Play Volleyball"
+					//"Ice Skating" : "Go Ice Skating",
+					//"Swimming Pool" : "Go Swimming",
+					//"Trailhead" : "Hike",
+					//"Zoo" : "Visit",
+				}
+				
+				var activity = amenities[Math.floor(Math.random() * amenities.length)];
+				var qsActivity = activity.replace(' ', '+');
+		    
+				var query = "%27AmenityType%27%3D%27" + qsActivity+"%27";
+				var outFields = "ParkName,ParkID";
+				var placeName = "";
+                var place = "";
+                //Boise Parks Amenities open dataset
+                var url = "http://opendata.cityofboise.org/datasets/7533d78ac95c45f88dba9b7d85e1c75c_0.geojson?where=" + query;
+                var address = "";
+ 
+			    $.get(url, function (data) {			        
+			        var choices = data.features;
+			        activityPlace = choices[Math.floor(Math.random() * choices.length)]
+
+			        placeName = activityPlace.properties.ParkName;
+			        var parkID = activityPlace.properties.ParkID;
+			        address = activityPlace.properties.Address;
+			        activityLatitude = activityPlace.properties.Latitude;
+			        activityLongitude = activityPlace.properties.Longitude;
+
+			        var activityObj = {
+			            "activity": descriptive[activity] ? descriptive[activity] : activity,
+			            "placeName": placeName,
+			            "address": address
+			        }
+			        activityCallback(activityObj);
+			    })
+
+			}
+
+			function activityJsonCallback(activityObject) {
+				$('.activity').html(activityObject.activity);
+				$('.placeName').html(activityObject.placeName);
+				$('.address').html(activityObject.address);
+			}
+
+			function refreshData(){
+				initialize();
+				getActivityJson(getRestaurantData);
+			}
+			
+			function getRestaurantData(activityObject){
+				activityJsonCallback(activityObject);
+              var auth = {
+				consumerKey : "YM0N3ONrsgd4WxF3q2ccEg",
+				consumerSecret : "1TCQq2klqj_pUwesfWrMZygSb5Q",
+				accessToken : "WGta5OjotxUBoUKp7bV2GimzYd3dgfAi",
+				accessTokenSecret : "CD4vtEiS1pzPX_5ULtuKfN9Ikjw",
+				serviceProvider : {
+					signatureMethod : "HMAC-SHA1"
+				}
+			};
+
+			var terms = 'restaurants';
+            
+			var near = activityObject.address + " Boise, ID&limit=20&radius_filter=800";
+			var accessor = {
+				consumerSecret : auth.consumerSecret,
+				tokenSecret : auth.accessTokenSecret
+			};
+			parameters = [];
+			parameters.push(['term', terms]);
+			parameters.push(['location', near]);
+			parameters.push(['callback', 'cb']);
+			parameters.push(['oauth_consumer_key', auth.consumerKey]);
+			parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+			parameters.push(['oauth_token', auth.accessToken]);
+			parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+			var message = {
+				'action' : 'http://api.yelp.com/v2/search',
+				'method' : 'GET',
+				'parameters' : parameters
+			};
+			OAuth.setTimestampAndNonce(message);
+			OAuth.SignatureMethod.sign(message, accessor);
+			var parameterMap = OAuth.getParameterMap(message.parameters);
+			parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
+			$.ajax({
+			    'url': message.action,
+			    'data': parameterMap,
+			    'cache': true,
+			    'dataType': 'jsonp',
+			    'jsonpCallback': 'cb',
+			    'success': function (data, textStats, XMLHttpRequest) {
+
+			        var choices = data.businesses;
+			        place = choices[Math.floor(Math.random() * choices.length)]
+			        $('.restaurant').html(place.name);
+			        $('.star-rating').attr("src", place.rating_img_url);
+
+			        // Yelp gives us Lat/Long for free      
+			        dropPin(activityLatitude, activityLongitude, activityMap, activityObject.address, activityObject.placeName);
+
+			    }
+			});
+}
+
+			function dropPin(latitude, longitude, whichMap, address, name) {
+			    var activityLatlng = new google.maps.LatLng(latitude, longitude);
+
+                    // Add info window with name of park or restaraunt and address
+					var contentString = '<b>' + name + '</b>' + ', ' +
+                                        '<em>' + address + '</em>';
+
+					var infowindow = new google.maps.InfoWindow({
+					    content: contentString
+					});
+
+                    var iconBase = './img/';
+					var marker = new google.maps.Marker({
+					  position: activityLatlng,
+					  animation: google.maps.Animation.DROP,
+					  map: whichMap,
+					  icon: whichMap == activityMap ? iconBase + 'activityPin.png' : iconBase + 'dinnerPin.png'
+			        });
+			        
+                    marker.addListener('click', function () {
+			            infowindow.open(whichMap, marker);
+			        });
+
+					if (whichMap == activityMap) {
+					    activityMap.setCenter(activityLatlng);
+					    dropPin(place.location.coordinate.latitude, place.location.coordinate.longitude, dinnerMap, place.location.address[0], place.name);
+					}
+					else {
+						dinnerMap.setCenter(activityLatlng)
+					}
+}
+
+			var activityMap;
+			var dinnerMap;
+
+			// Refresh Data
+			$(document).ready(function() {
+				getActivityJson(getRestaurantData);
+			});
+
+			/* Map The Activity */
+			function initialize() {
+				var myLatlng = new google.maps.LatLng(43.6261601,-116.189266);
+				var mapOptions = {
+					zoom: 13,
+					center: myLatlng
+				}
+				activityMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+				dinnerMap = new google.maps.Map(document.getElementById('map-canvas-dinner'), mapOptions);
+
+			}
+
+			//show map
+			
+			google.maps.event.addDomListener(window, 'load', initialize);
+
+		</script>
+		
+		</head>
+
+		<body>
+
+			<div class="container">
+				<div class="row">
+					<img src="img/logo.svg" class="center-block logo animated bounceInDown">
+				</div>
+				<div class="row spacer">
+
+					<div class="col-md-6 animated bounceIn">
+						<img src="img/activity.svg" class="activity inputLogo center-block">
+						<div class="infoHolder center-block">
+							<p><span class="activity"></span> at <span class="placeName"></span></p>
+							<div id="map-canvas"></div>
+						</div>
+					</div>
+					<div class="col-md-6 animated bounceIn">
+						<img src="img/dinner.svg" class="dinner inputLogo center-block">
+						<div class="infoHolder center-block">
+							<p>
+								<span>Eat at </span>
+								<span class="restaurant"></span> 
+								
+								<img class="star-rating" src="">
+							</p>
+							<div id="map-canvas-dinner"></div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row spacer">
+					<button class="btn btn-default date center-block" type="submit" onClick="refreshData()">RAN-DATE-OMIZE</button>
+				</div>
+				<div class="row spacer">
+					<p class="note">*Bring your own supplies and date.</p>
+				</div>
+                <div class="row spacer">
+          
+                       <p class="footerHead">NOTE:</p>
+                          <p class="footer"> Datefort was developed during the Hackfort 2015 hackathon by indepedent coders, using <a href="//cityofboise.org" >City of Boise</a> and <a href="//yelp.com" >Yelp</a> data. The City of Boise  is hosting the app, but is not responsible for its content. Read our <a href="https://opendata.cityofboise.org">full disclaimer</a>, <a href="http://treefortmusicfest.com/hackfort">learn more about Hackfort</a> and <a href="https://github.com/BoiseOpenData/hackfort-datefort">view the code on Github</a>.</p>
+                   
+                </div>
+
+				<div id="map-canvas"></div>
+			</div>
+
+			
+			
+		</body>
+</html>
+
+
